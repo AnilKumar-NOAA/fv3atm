@@ -1006,9 +1006,9 @@ module FV3GFS_io_mod
 
     if (.not. allocated(sfc_name2)) then
       !--- allocate the various containers needed for restarts
-      allocate(sfc_name2(nvar_s2m+nvar_s2o+nvar_s2mp+nvar_s2r))
+      allocate(sfc_name2(nvar_s2m+nvar_s2o+nvar_s2mp+nvar_s2r+nvar_s2l))
       allocate(sfc_name3(0:nvar_s3+nvar_s3mp))
-      allocate(sfc_var2(nx,ny,nvar_s2m+nvar_s2o+nvar_s2mp+nvar_s2r))
+      allocate(sfc_var2(nx,ny,nvar_s2m+nvar_s2o+nvar_s2mp+nvar_s2r+nvar_s2l))
       ! Note that this may cause problems with RUC LSM for coldstart runs from GFS data
       ! if the initial conditions do contain this variable, because Model%kice is 9 for
       ! RUC LSM, but tiice in the initial conditions will only have two vertical layers
@@ -1115,6 +1115,7 @@ module FV3GFS_io_mod
       sfc_name2(nvar_s2m+16) = 'ifd'
       sfc_name2(nvar_s2m+17) = 'dt_cool'
       sfc_name2(nvar_s2m+18) = 'qrain'
+      nvar_s2me = nvar_s2m+18
 !
 ! Only needed when Noah MP LSM is used - 29 2D
 !
@@ -1148,6 +1149,7 @@ module FV3GFS_io_mod
         sfc_name2(nvar_s2m+45) = 'smcwtdxy'
         sfc_name2(nvar_s2m+46) = 'deeprechxy'
         sfc_name2(nvar_s2m+47) = 'rechxy'
+        nvar_s2me = nvar_s2m+47
       else if (Model%lsm == Model%lsm_ruc .and. warm_start) then
         sfc_name2(nvar_s2m+19) = 'wetness'
         sfc_name2(nvar_s2m+20) = 'clw_surf_land'
@@ -1161,11 +1163,51 @@ module FV3GFS_io_mod
         sfc_name2(nvar_s2m+28) = 'sfalb_lnd'
         sfc_name2(nvar_s2m+29) = 'sfalb_lnd_bck'
         sfc_name2(nvar_s2m+30) = 'sfalb_ice'
+        nvar_s2me = nvar_s2m+30
         if (Model%rdlai) then
           sfc_name2(nvar_s2m+31) = 'lai'
+          nvar_s2me = nvar_s2m+31 
         endif
       else if (Model%lsm == Model%lsm_ruc .and. Model%rdlai) then
         sfc_name2(nvar_s2m+19) = 'lai'
+        nvar_s2me = nvar_s2m+19
+      endif
+
+!Flake  0,1,2 varios option for flake schemes 
+! and adjust your parameters here.
+      if (Model%lkm == 0  ) then
+         sfc_name2(nvar_s2me+1) = 'h_ML'
+         sfc_name2(nvar_s2me+2) = 't_ML'
+         sfc_name2(nvar_s2me+3) = 't_mnw'
+         sfc_name2(nvar_s2me+4) = 'h_talb'
+         sfc_name2(nvar_s2me+5) = 't_talb'
+         sfc_name2(nvar_s2me+6) = 't_bot1'
+         sfc_name2(nvar_s2me+7) = 't_bot2'
+         sfc_name2(nvar_s2me+8) = 'c_t'
+         sfc_name2(nvar_s2me+9) = 'T_snow'
+         sfc_name2(nvar_s2me+10) = 'T_ice'
+      elseif (Model%lkm == 1  ) then
+         sfc_name2(nvar_s2me+1) = 'h_ML'
+         sfc_name2(nvar_s2me+2) = 't_ML'
+         sfc_name2(nvar_s2me+3) = 't_mnw'
+         sfc_name2(nvar_s2me+4) = 'h_talb'
+         sfc_name2(nvar_s2me+5) = 't_talb'
+         sfc_name2(nvar_s2me+6) = 't_bot1'
+         sfc_name2(nvar_s2me+7) = 't_bot2'
+         sfc_name2(nvar_s2me+8) = 'c_t'
+         sfc_name2(nvar_s2me+9) = 'T_snow'
+         sfc_name2(nvar_s2me+10) = 'T_ice'
+      elseif (Model%lkm == 2  ) then
+         sfc_name2(nvar_s2me+1) = 'h_ML'
+         sfc_name2(nvar_s2me+2) = 't_ML'
+         sfc_name2(nvar_s2me+3) = 't_mnw'
+         sfc_name2(nvar_s2me+4) = 'h_talb'
+         sfc_name2(nvar_s2me+5) = 't_talb'
+         sfc_name2(nvar_s2me+6) = 't_bot1'
+         sfc_name2(nvar_s2me+7) = 't_bot2'
+         sfc_name2(nvar_s2me+8) = 'c_t'
+         sfc_name2(nvar_s2me+9) = 'T_snow'
+         sfc_name2(nvar_s2me+10) = 'T_ice'
       endif
 
       is_lsoil=.false.
@@ -1266,6 +1308,19 @@ module FV3GFS_io_mod
             end if
          enddo
       endif ! noahmp
+
+! Flake for all schemes restart fields
+      if (Model%lkm == 0 .or. Model%lkm == 1 .or. Model%lkm == 2 ) then
+         mand = .false.
+         do num = nvar_s2me+1,nvar_s2me+nvar_s2l
+            var2_p => sfc_var2(:,:,num)
+            if(is_lsoil) then
+               call register_restart_field(Sfc_restart,sfc_name2(num),var2_p,dimensions=(/'lat','lon'/), is_optional=.not.mand) 
+            else
+               call register_restart_field(Sfc_restart,sfc_name2(num),var2_p,dimensions=(/'Time   ','yaxis_1','xaxis_1'/),is_optional=.not.mand)
+            endif
+         enddo
+      endif
       nullify(var2_p)
    endif  ! if not allocated
 
@@ -1421,6 +1476,17 @@ module FV3GFS_io_mod
         else
           Sfcprop(nb)%zorlwav(ix)  = Sfcprop(nb)%zorlw(ix)
         endif
+
+! Flake 
+        if(Sfcprop(nb)%lakefrac(ix) < zero) Sfcprop(nb)%lakefrac(ix) =zero
+        if(Sfcprop(nb)%landfrac(ix) < zero) Sfcprop(nb)%landfrac(ix) =zero
+        if(Sfcprop(nb)%fice(ix)     < zero) Sfcprop(nb)%fice(ix)     =zero
+!        Sfcprop(nb)%oceanfrac(ix)=one-Sfcprop(nb)%landfrac(ix)-Sfcprop(nb)%lakefrac(ix)-Sfcprop(nb)%fice(ix)
+        Sfcprop(nb)%oceanfrac(ix)=one-Sfcprop(nb)%landfrac(ix)-Sfcprop(nb)%lakefrac(ix)
+        if(Sfcprop(nb)%oceanfrac(ix) < zero) Sfcprop(nb)%oceanfrac(ix)=zero
+!           write(35,75) ix, Sfcprop(nb)%fice(ix), Sfcprop(nb)%oceanfrac(ix), &
+!     &                  Sfcprop(nb)%landfrac(ix), Sfcprop(nb)%lakefrac(ix)
+! end flake 
 
         if (Sfcprop(nb)%stype(ix) == 14 .or. Sfcprop(nb)%stype(ix) <= 0) then
           Sfcprop(nb)%landfrac(ix) = zero
