@@ -1630,6 +1630,7 @@ module FV3GFS_io_mod
             Sfcprop(nb)%ifd(ix)     = sfc_var2(i,j,nvar_s2m+16) !--- nsstm ifd
             Sfcprop(nb)%dt_cool(ix) = sfc_var2(i,j,nvar_s2m+17) !--- nsstm dt_cool
             Sfcprop(nb)%qrain(ix)   = sfc_var2(i,j,nvar_s2m+18) !--- nsstm qrain
+            nvar_s2me = nvar_s2m+18
           endif
         endif
 
@@ -1647,14 +1648,17 @@ module FV3GFS_io_mod
           Sfcprop(nb)%sfalb_lnd(ix)       = sfc_var2(i,j,nvar_s2m+28)
           Sfcprop(nb)%sfalb_lnd_bck(ix)   = sfc_var2(i,j,nvar_s2m+29)
           Sfcprop(nb)%sfalb_ice(ix)       = sfc_var2(i,j,nvar_s2m+30)
+          nvar_s2me = nvar_s2m+30
           if (Model%rdlai) then
             Sfcprop(nb)%xlaixy(ix)        = sfc_var2(i,j,nvar_s2m+31)
+            nvar_s2me = nvar_s2m+31
           endif
         else if (Model%lsm == Model%lsm_ruc) then
           ! Initialize RUC snow cover on ice from snow cover
           Sfcprop(nb)%sncovr_ice(ix)      = Sfcprop(nb)%sncovr(ix)
           if (Model%rdlai) then
             Sfcprop(nb)%xlaixy(ix) = sfc_var2(i,j,nvar_s2m+19)
+            nvar_s2me = nvar_s2m+19
           end if
         elseif (Model%lsm == Model%lsm_noahmp) then
           !--- Extra Noah MP variables
@@ -1687,8 +1691,43 @@ module FV3GFS_io_mod
           Sfcprop(nb)%smcwtdxy(ix)   = sfc_var2(i,j,nvar_s2m+45)
           Sfcprop(nb)%deeprechxy(ix) = sfc_var2(i,j,nvar_s2m+46)
           Sfcprop(nb)%rechxy(ix)     = sfc_var2(i,j,nvar_s2m+47)
+          nvar_s2me = nvar_s2m+47
         endif
-
+          !Flake
+        if (Model%lkm == 0 ) then
+            Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
+            Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
+            Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
+            Sfcprop(nb)%h_talb(ix)     = sfc_var2(i,j,nvar_s2me+4)
+            Sfcprop(nb)%t_talb(ix)     = sfc_var2(i,j,nvar_s2me+5)
+            Sfcprop(nb)%t_bot1(ix)     = sfc_var2(i,j,nvar_s2me+6)
+            Sfcprop(nb)%t_bot2(ix)     = sfc_var2(i,j,nvar_s2me+7)
+            Sfcprop(nb)%c_t(ix)        = sfc_var2(i,j,nvar_s2me+8)
+            Sfcprop(nb)%T_snow(ix)     = sfc_var2(i,j,nvar_s2me+9)
+            Sfcprop(nb)%T_ice(ix)      = sfc_var2(i,j,nvar_s2me+10) 
+        elseif (Model%lkm == 1 ) then 
+            Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
+            Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
+            Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
+            Sfcprop(nb)%h_talb(ix)     = sfc_var2(i,j,nvar_s2me+4)
+            Sfcprop(nb)%t_talb(ix)     = sfc_var2(i,j,nvar_s2me+5)
+            Sfcprop(nb)%t_bot1(ix)     = sfc_var2(i,j,nvar_s2me+6)
+            Sfcprop(nb)%t_bot2(ix)     = sfc_var2(i,j,nvar_s2me+7)
+            Sfcprop(nb)%c_t(ix)        = sfc_var2(i,j,nvar_s2me+8)
+            Sfcprop(nb)%T_snow(ix)     = sfc_var2(i,j,nvar_s2me+9)
+            Sfcprop(nb)%T_ice(ix)      = sfc_var2(i,j,nvar_s2me+10)
+        elseif (Model%lkm == 2 ) then
+            Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
+            Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
+            Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
+            Sfcprop(nb)%h_talb(ix)     = sfc_var2(i,j,nvar_s2me+4)
+            Sfcprop(nb)%t_talb(ix)     = sfc_var2(i,j,nvar_s2me+5)
+            Sfcprop(nb)%t_bot1(ix)     = sfc_var2(i,j,nvar_s2me+6)
+            Sfcprop(nb)%t_bot2(ix)     = sfc_var2(i,j,nvar_s2me+7)
+            Sfcprop(nb)%c_t(ix)        = sfc_var2(i,j,nvar_s2me+8)
+            Sfcprop(nb)%T_snow(ix)     = sfc_var2(i,j,nvar_s2me+9)
+            Sfcprop(nb)%T_ice(ix)      = sfc_var2(i,j,nvar_s2me+10)
+        endif 
         if (Model%lsm == Model%lsm_noah .or. Model%lsm == Model%lsm_noahmp .or. (.not.warm_start)) then
           !--- 3D variables
           do lsoil = 1,Model%lsoil
@@ -1966,6 +2005,8 @@ module FV3GFS_io_mod
     integer :: id_restart
     integer :: nvar2m, nvar2o, nvar3
     integer :: nvar2r, nvar2mp, nvar3mp
+    ! ---for flake
+    integer :: nvar2me, nvar2l
     logical :: mand
     character(len=32) :: fn_srf = 'sfc_data.nc'
     real(kind=kind_phys), pointer, dimension(:,:)   :: var2_p  => NULL()
@@ -2005,6 +2046,14 @@ module FV3GFS_io_mod
     if (Model%lsm == Model%lsm_noahmp) then
       nvar2mp = 29
       nvar3mp = 5
+    endif
+!Flake
+    if (Model%lkm == 0 .or. Model%lkm == 1 .or. Model%lkm == 2) then
+         nvar2l = 10
+         nvar2me = nvar2m
+    else
+         nvar2l = 0
+         nvar2me = 0
     endif
 
     isc = Atm_block%isc
