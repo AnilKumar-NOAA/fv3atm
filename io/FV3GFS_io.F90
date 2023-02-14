@@ -2154,9 +2154,9 @@ module FV3GFS_io_mod
 
     if (.not. allocated(sfc_name2)) then
       !--- allocate the various containers needed for restarts
-      allocate(sfc_name2(nvar2m+nvar2o+nvar2mp+nvar2r))
+      allocate(sfc_name2(nvar2m+nvar2o+nvar2mp+nvar2r+nvar2l))
       allocate(sfc_name3(0:nvar3+nvar3mp))
-      allocate(sfc_var2(nx,ny,nvar2m+nvar2o+nvar2mp+nvar2r))
+      allocate(sfc_var2(nx,ny,nvar2m+nvar2o+nvar2mp+nvar2r+nvar2l))
       if (Model%lsm == Model%lsm_noah .or. Model%lsm == Model%lsm_noahmp) then
         allocate(sfc_var3(nx,ny,Model%lsoil,nvar3))
       elseif (Model%lsm == Model%lsm_ruc) then
@@ -2304,6 +2304,41 @@ module FV3GFS_io_mod
         sfc_name2(nvar2m+46) = 'deeprechxy'
         sfc_name2(nvar2m+47) = 'rechxy'
       endif
+!Flake
+      if(Model%lkm == 0 ) then
+         sfc_name2(nvar2me+1)  = 'h_ML'
+         sfc_name2(nvar2me+2)  = 't_ML'
+         sfc_name2(nvar2me+3)  = 't_mnw'
+         sfc_name2(nvar2me+4)  = 'h_talb'
+         sfc_name2(nvar2me+5)  = 't_talb'
+         sfc_name2(nvar2me+6)  = 't_bot1'
+         sfc_name2(nvar2me+7)  = 't_bot2'
+         sfc_name2(nvar2me+8)  = 'c_t'
+         sfc_name2(nvar2me+9)  = 'T_snow'
+         sfc_name2(nvar2me+10) = 'T_ice'
+      elseif (Model%lkm == 1 ) then
+         sfc_name2(nvar2me+1)  = 'h_ML'
+         sfc_name2(nvar2me+2)  = 't_ML'
+         sfc_name2(nvar2me+3)  = 't_mnw'
+         sfc_name2(nvar2me+4)  = 'h_talb'
+         sfc_name2(nvar2me+5)  = 't_talb'
+         sfc_name2(nvar2me+6)  = 't_bot1'
+         sfc_name2(nvar2me+7)  = 't_bot2'
+         sfc_name2(nvar2me+8)  = 'c_t'
+         sfc_name2(nvar2me+9)  = 'T_snow'
+         sfc_name2(nvar2me+10) = 'T_ice'
+      elseif (Model%lkm == 2 ) then
+         sfc_name2(nvar2me+1)  = 'h_ML'
+         sfc_name2(nvar2me+2)  = 't_ML'
+         sfc_name2(nvar2me+3)  = 't_mnw'
+         sfc_name2(nvar2me+4)  = 'h_talb'
+         sfc_name2(nvar2me+5)  = 't_talb'
+         sfc_name2(nvar2me+6)  = 't_bot1'
+         sfc_name2(nvar2me+7)  = 't_bot2'
+         sfc_name2(nvar2me+8)  = 'c_t'
+         sfc_name2(nvar2me+9)  = 'T_snow'
+         sfc_name2(nvar2me+10) = 'T_ice'
+      endif
    end if
 
    !--- register the 2D fields
@@ -2348,6 +2383,16 @@ module FV3GFS_io_mod
                                     &is_optional=.not.mand)
       enddo
    endif
+!Flake
+    nvar2me=nvar2m+nvar2o+nvar2r+nvar2mp
+    if(Model%lkm > 0) then
+       mand = .false.
+       do num = nvar2me+1,nvar2me+nvar2l
+          var2_p => sfc_var2(:,:,num)
+          call register_restart_field(Sfc_restart,sfc_name2(num),var2_p,dimensions=(/'xaxis_1', 'yaxis_1', 'Time   '/),&  
+                                     &is_optional=.not.mand)
+       enddo
+    endif
    nullify(var2_p)
 
    if (Model%lsm == Model%lsm_noah .or. Model%lsm == Model%lsm_noahmp) then
@@ -2498,6 +2543,7 @@ module FV3GFS_io_mod
           sfc_var2(i,j,nvar2m+16) = Sfcprop(nb)%ifd(ix)    !--- nsstm ifd
           sfc_var2(i,j,nvar2m+17) = Sfcprop(nb)%dt_cool(ix)!--- nsstm dt_cool
           sfc_var2(i,j,nvar2m+18) = Sfcprop(nb)%qrain(ix)  !--- nsstm qrain
+          nvar2me = nvar2m + 18
         endif
 
         if (Model%lsm == Model%lsm_ruc) then
@@ -2514,8 +2560,10 @@ module FV3GFS_io_mod
           sfc_var2(i,j,nvar2m+28) = Sfcprop(nb)%sfalb_lnd(ix)
           sfc_var2(i,j,nvar2m+29) = Sfcprop(nb)%sfalb_lnd_bck(ix)
           sfc_var2(i,j,nvar2m+30) = Sfcprop(nb)%sfalb_ice(ix)
+          nvar2me = nvar2m + 30
           if (Model%rdlai) then
             sfc_var2(i,j,nvar2m+31) = Sfcprop(nb)%xlaixy(ix)
+            nvar2me = nvar2m + 31
           endif
         else if (Model%lsm == Model%lsm_noahmp) then
           !--- Extra Noah MP variables
@@ -2548,6 +2596,46 @@ module FV3GFS_io_mod
           sfc_var2(i,j,nvar2m+45) = Sfcprop(nb)%smcwtdxy(ix)
           sfc_var2(i,j,nvar2m+46) = Sfcprop(nb)%deeprechxy(ix)
           sfc_var2(i,j,nvar2m+47) = Sfcprop(nb)%rechxy(ix)
+          nvar2me = nvar2m + 47
+        endif
+
+!Flake
+        if(Model%lkm == 0 ) then
+           sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
+           sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
+           sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
+           sfc_var2(i,j,nvar2me+4) = Sfcprop(nb)%h_talb(ix)
+           sfc_var2(i,j,nvar2me+5) = Sfcprop(nb)%t_talb(ix)
+           sfc_var2(i,j,nvar2me+6) = Sfcprop(nb)%t_bot1(ix)
+           sfc_var2(i,j,nvar2me+7) = Sfcprop(nb)%t_bot2(ix)
+           sfc_var2(i,j,nvar2me+8) = Sfcprop(nb)%c_t(ix)
+           sfc_var2(i,j,nvar2me+9) = Sfcprop(nb)%T_snow(ix)
+           sfc_var2(i,j,nvar2me+10) = Sfcprop(nb)%T_ice(ix)
+           nvar2me = nvar2m + 10
+        elseif (Model%lkm == 1 ) then
+           sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
+           sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
+           sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
+           sfc_var2(i,j,nvar2me+4) = Sfcprop(nb)%h_talb(ix)
+           sfc_var2(i,j,nvar2me+5) = Sfcprop(nb)%t_talb(ix)
+           sfc_var2(i,j,nvar2me+6) = Sfcprop(nb)%t_bot1(ix)
+           sfc_var2(i,j,nvar2me+7) = Sfcprop(nb)%t_bot2(ix)
+           sfc_var2(i,j,nvar2me+8) = Sfcprop(nb)%c_t(ix)
+           sfc_var2(i,j,nvar2me+9) = Sfcprop(nb)%T_snow(ix)
+           sfc_var2(i,j,nvar2me+10) = Sfcprop(nb)%T_ice(ix)
+           nvar2me = nvar2m + 10
+        elseif (Model%lkm == 2 ) then
+           sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
+           sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
+           sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
+           sfc_var2(i,j,nvar2me+4) = Sfcprop(nb)%h_talb(ix)
+           sfc_var2(i,j,nvar2me+5) = Sfcprop(nb)%t_talb(ix)
+           sfc_var2(i,j,nvar2me+6) = Sfcprop(nb)%t_bot1(ix)
+           sfc_var2(i,j,nvar2me+7) = Sfcprop(nb)%t_bot2(ix)
+           sfc_var2(i,j,nvar2me+8) = Sfcprop(nb)%c_t(ix)
+           sfc_var2(i,j,nvar2me+9) = Sfcprop(nb)%T_snow(ix)
+           sfc_var2(i,j,nvar2me+10) = Sfcprop(nb)%T_ice(ix)
+           nvar2me = nvar2m + 10
         endif
 
         do k = 1,Model%kice
