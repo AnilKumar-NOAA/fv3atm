@@ -204,13 +204,13 @@ module FV3GFS_io_mod
      nsfcprop2d = nsfcprop2d + 16
    endif
 
-! Flake (lkm - Control for flake surface schemes)
+! Flake (lake_model_option - Control for flake surface schemes)
 
-   if(Model%lkm == 0 ) then    ! lkm = 0 (use flake model)
+   if(Model%lake_model_option == 0 ) then    ! lake_model_option = 0 (use flake model)
      nsfcprop2d = nsfcprop2d + 10
-   elseif (Model%lkm == 1 ) then    ! lkm = 1 (use NSST flake model)
+   elseif (Model%lake_model_option == 1 ) then    ! lake_model_option = 1 (use NSST flake model)
      nsfcprop2d = nsfcprop2d + 10
-   elseif (Model%lkm == 2 ) then    ! lkm = 2 (use any other like ice lake model)
+   elseif (Model%lake_model_option == 2 ) then    ! lake_model_option = 2 (use any other like ice lake model)
      nsfcprop2d = nsfcprop2d + 10   ! what 10 variables need to be assigned to any  other than 0 and 1 options schemes )
    endif
 
@@ -446,7 +446,7 @@ module FV3GFS_io_mod
          idx_opt = idx_opt + 15
        endif
 
-       if (Model%lkm == 0 ) then
+       if (Model%lake_model_option == 0 ) then
            temp2d(i,j,idx_opt+ 1) = GFS_Data(nb)%Sfcprop%h_ML(ix)
            temp2d(i,j,idx_opt+ 2) = GFS_Data(nb)%Sfcprop%t_ML(ix)
            temp2d(i,j,idx_opt+ 3) = GFS_Data(nb)%Sfcprop%t_mnw(ix)
@@ -457,7 +457,7 @@ module FV3GFS_io_mod
            temp2d(i,j,idx_opt+ 8) = GFS_Data(nb)%Sfcprop%c_t(ix)
            temp2d(i,j,idx_opt+ 9) = GFS_Data(nb)%Sfcprop%T_snow(ix)
            temp2d(i,j,idx_opt+ 10) = GFS_Data(nb)%Sfcprop%T_ice(ix)
-       elseif (Model%lkm == 1 ) then
+       elseif (Model%lake_model_option == 1 ) then
            temp2d(i,j,idx_opt+ 1) = GFS_Data(nb)%Sfcprop%h_ML(ix)
            temp2d(i,j,idx_opt+ 2) = GFS_Data(nb)%Sfcprop%t_ML(ix)
            temp2d(i,j,idx_opt+ 3) = GFS_Data(nb)%Sfcprop%t_mnw(ix)
@@ -468,7 +468,7 @@ module FV3GFS_io_mod
            temp2d(i,j,idx_opt+ 8) = GFS_Data(nb)%Sfcprop%c_t(ix)
            temp2d(i,j,idx_opt+ 9) = GFS_Data(nb)%Sfcprop%T_snow(ix)
            temp2d(i,j,idx_opt+ 10) = GFS_Data(nb)%Sfcprop%T_ice(ix)
-       elseif (Model%lkm == 2 ) then
+       elseif (Model%lake_model_option == 2 ) then
            temp2d(i,j,idx_opt+ 1) = GFS_Data(nb)%Sfcprop%h_ML(ix)
            temp2d(i,j,idx_opt+ 2) = GFS_Data(nb)%Sfcprop%t_ML(ix)
            temp2d(i,j,idx_opt+ 3) = GFS_Data(nb)%Sfcprop%t_mnw(ix)
@@ -743,11 +743,11 @@ module FV3GFS_io_mod
 ! Flake  - restart container for flake model component
 ! keeping 10 for each flake schemes
 
-    if (Model%lkm == 0 ) then
+    if (Model%lake_model_option == 0 ) then
        nvar_s2l = 10
-    elseif (Model%lkm == 1 ) then
+    elseif (Model%lake_model_option == 1 ) then
        nvar_s2l = 10
-    elseif (Model%lkm == 2 ) then
+    elseif (Model%lake_model_option == 2 ) then
        nvar_s2l = 10
     else
        nvar_s2l = 0
@@ -1175,7 +1175,7 @@ module FV3GFS_io_mod
 
 !Flake  0,1,2 varios option for flake schemes 
 ! and adjust your parameters here.
-      if (Model%lkm == 0  ) then
+      if (Model%lake_model_option == 0  ) then
          sfc_name2(nvar_s2me+1) = 'h_ML'
          sfc_name2(nvar_s2me+2) = 't_ML'
          sfc_name2(nvar_s2me+3) = 't_mnw'
@@ -1186,7 +1186,7 @@ module FV3GFS_io_mod
          sfc_name2(nvar_s2me+8) = 'c_t'
          sfc_name2(nvar_s2me+9) = 'T_snow'
          sfc_name2(nvar_s2me+10) = 'T_ice'
-      elseif (Model%lkm == 1  ) then
+      elseif (Model%lake_model_option == 1  ) then
          sfc_name2(nvar_s2me+1) = 'h_ML'
          sfc_name2(nvar_s2me+2) = 't_ML'
          sfc_name2(nvar_s2me+3) = 't_mnw'
@@ -1197,7 +1197,7 @@ module FV3GFS_io_mod
          sfc_name2(nvar_s2me+8) = 'c_t'
          sfc_name2(nvar_s2me+9) = 'T_snow'
          sfc_name2(nvar_s2me+10) = 'T_ice'
-      elseif (Model%lkm == 2  ) then
+      elseif (Model%lake_model_option == 2  ) then
          sfc_name2(nvar_s2me+1) = 'h_ML'
          sfc_name2(nvar_s2me+2) = 't_ML'
          sfc_name2(nvar_s2me+3) = 't_mnw'
@@ -1310,7 +1310,7 @@ module FV3GFS_io_mod
       endif ! noahmp
 
 ! Flake for all schemes restart fields
-      if (Model%lkm == 0 .or. Model%lkm == 1 .or. Model%lkm == 2 ) then
+      if (Model%lake_model_option == 0 .or. Model%lake_model_option == 1 .or. Model%lake_model_option == 2 ) then
          mand = .false.
          do num = nvar_s2me+1,nvar_s2me+nvar_s2l
             var2_p => sfc_var2(:,:,num)
@@ -1694,7 +1694,7 @@ module FV3GFS_io_mod
           nvar_s2me = nvar_s2m+47
         endif
           !Flake
-        if (Model%lkm == 0 ) then
+        if (Model%lake_model_option == 0 ) then
             Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
             Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
             Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
@@ -1705,7 +1705,7 @@ module FV3GFS_io_mod
             Sfcprop(nb)%c_t(ix)        = sfc_var2(i,j,nvar_s2me+8)
             Sfcprop(nb)%T_snow(ix)     = sfc_var2(i,j,nvar_s2me+9)
             Sfcprop(nb)%T_ice(ix)      = sfc_var2(i,j,nvar_s2me+10) 
-        elseif (Model%lkm == 1 ) then 
+        elseif (Model%lake_model_option == 1 ) then 
             Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
             Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
             Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
@@ -1716,7 +1716,7 @@ module FV3GFS_io_mod
             Sfcprop(nb)%c_t(ix)        = sfc_var2(i,j,nvar_s2me+8)
             Sfcprop(nb)%T_snow(ix)     = sfc_var2(i,j,nvar_s2me+9)
             Sfcprop(nb)%T_ice(ix)      = sfc_var2(i,j,nvar_s2me+10)
-        elseif (Model%lkm == 2 ) then
+        elseif (Model%lake_model_option == 2 ) then
             Sfcprop(nb)%h_ML(ix)       = sfc_var2(i,j,nvar_s2me+1)
             Sfcprop(nb)%t_ML(ix)       = sfc_var2(i,j,nvar_s2me+2)
             Sfcprop(nb)%t_mnw(ix)      = sfc_var2(i,j,nvar_s2me+3)
@@ -2048,7 +2048,7 @@ module FV3GFS_io_mod
       nvar3mp = 5
     endif
 !Flake
-    if (Model%lkm == 0 .or. Model%lkm == 1 .or. Model%lkm == 2) then
+    if (Model%lake_model_option == 0 .or. Model%lake_model_option == 1 .or. Model%lake_model_option == 2) then
          nvar2l = 10
          nvar2me = nvar2m
     else
@@ -2305,7 +2305,7 @@ module FV3GFS_io_mod
         sfc_name2(nvar2m+47) = 'rechxy'
       endif
 !Flake
-      if(Model%lkm == 0 ) then
+      if(Model%lake_model_option == 0 ) then
          sfc_name2(nvar2me+1)  = 'h_ML'
          sfc_name2(nvar2me+2)  = 't_ML'
          sfc_name2(nvar2me+3)  = 't_mnw'
@@ -2316,7 +2316,7 @@ module FV3GFS_io_mod
          sfc_name2(nvar2me+8)  = 'c_t'
          sfc_name2(nvar2me+9)  = 'T_snow'
          sfc_name2(nvar2me+10) = 'T_ice'
-      elseif (Model%lkm == 1 ) then
+      elseif (Model%lake_model_option == 1 ) then
          sfc_name2(nvar2me+1)  = 'h_ML'
          sfc_name2(nvar2me+2)  = 't_ML'
          sfc_name2(nvar2me+3)  = 't_mnw'
@@ -2327,7 +2327,7 @@ module FV3GFS_io_mod
          sfc_name2(nvar2me+8)  = 'c_t'
          sfc_name2(nvar2me+9)  = 'T_snow'
          sfc_name2(nvar2me+10) = 'T_ice'
-      elseif (Model%lkm == 2 ) then
+      elseif (Model%lake_model_option == 2 ) then
          sfc_name2(nvar2me+1)  = 'h_ML'
          sfc_name2(nvar2me+2)  = 't_ML'
          sfc_name2(nvar2me+3)  = 't_mnw'
@@ -2385,7 +2385,7 @@ module FV3GFS_io_mod
    endif
 !Flake
     nvar2me=nvar2m+nvar2o+nvar2r+nvar2mp
-    if(Model%lkm > 0) then
+    if(Model%lake_model_option > 0) then
        mand = .false.
        do num = nvar2me+1,nvar2me+nvar2l
           var2_p => sfc_var2(:,:,num)
@@ -2600,7 +2600,7 @@ module FV3GFS_io_mod
         endif
 
 !Flake
-        if(Model%lkm == 0 ) then
+        if(Model%lake_model_option == 0 ) then
            sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
            sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
            sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
@@ -2612,7 +2612,7 @@ module FV3GFS_io_mod
            sfc_var2(i,j,nvar2me+9) = Sfcprop(nb)%T_snow(ix)
            sfc_var2(i,j,nvar2me+10) = Sfcprop(nb)%T_ice(ix)
            nvar2me = nvar2m + 10
-        elseif (Model%lkm == 1 ) then
+        elseif (Model%lake_model_option == 1 ) then
            sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
            sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
            sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
@@ -2624,7 +2624,7 @@ module FV3GFS_io_mod
            sfc_var2(i,j,nvar2me+9) = Sfcprop(nb)%T_snow(ix)
            sfc_var2(i,j,nvar2me+10) = Sfcprop(nb)%T_ice(ix)
            nvar2me = nvar2m + 10
-        elseif (Model%lkm == 2 ) then
+        elseif (Model%lake_model_option == 2 ) then
            sfc_var2(i,j,nvar2me+1) = Sfcprop(nb)%h_ML(ix)
            sfc_var2(i,j,nvar2me+2) = Sfcprop(nb)%t_ML(ix)
            sfc_var2(i,j,nvar2me+3) = Sfcprop(nb)%t_mnw(ix)
