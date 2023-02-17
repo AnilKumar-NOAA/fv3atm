@@ -1163,10 +1163,10 @@ module FV3GFS_io_mod
         sfc_name2(nvar_s2m+28) = 'sfalb_lnd'
         sfc_name2(nvar_s2m+29) = 'sfalb_lnd_bck'
         sfc_name2(nvar_s2m+30) = 'sfalb_ice'
-        nvar_s2me = nvar_s2m+30
+        nvar_s2me = nvar_s2m+12
         if (Model%rdlai) then
           sfc_name2(nvar_s2m+31) = 'lai'
-          nvar_s2me = nvar_s2m+31 
+          nvar_s2me = nvar_s2m+1 
         endif
       else if (Model%lsm == Model%lsm_ruc .and. Model%rdlai) then
         sfc_name2(nvar_s2m+19) = 'lai'
@@ -1648,10 +1648,10 @@ module FV3GFS_io_mod
           Sfcprop(nb)%sfalb_lnd(ix)       = sfc_var2(i,j,nvar_s2m+28)
           Sfcprop(nb)%sfalb_lnd_bck(ix)   = sfc_var2(i,j,nvar_s2m+29)
           Sfcprop(nb)%sfalb_ice(ix)       = sfc_var2(i,j,nvar_s2m+30)
-          nvar_s2me = nvar_s2m+30
+          nvar_s2me = nvar_s2m+12
           if (Model%rdlai) then
             Sfcprop(nb)%xlaixy(ix)        = sfc_var2(i,j,nvar_s2m+31)
-            nvar_s2me = nvar_s2m+31
+            nvar_s2me = nvar_s2m+1
           endif
         else if (Model%lsm == Model%lsm_ruc) then
           ! Initialize RUC snow cover on ice from snow cover
@@ -2560,10 +2560,10 @@ module FV3GFS_io_mod
           sfc_var2(i,j,nvar2m+28) = Sfcprop(nb)%sfalb_lnd(ix)
           sfc_var2(i,j,nvar2m+29) = Sfcprop(nb)%sfalb_lnd_bck(ix)
           sfc_var2(i,j,nvar2m+30) = Sfcprop(nb)%sfalb_ice(ix)
-          nvar2me = nvar2m + 30
+          nvar2me = nvar2m + 12
           if (Model%rdlai) then
             sfc_var2(i,j,nvar2m+31) = Sfcprop(nb)%xlaixy(ix)
-            nvar2me = nvar2m + 31
+            nvar2me = nvar2m + 1
           endif
         else if (Model%lsm == Model%lsm_noahmp) then
           !--- Extra Noah MP variables
